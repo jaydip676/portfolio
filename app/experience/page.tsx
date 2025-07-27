@@ -1,4 +1,11 @@
-import React from "react";
+'use client'
+
+import React, { useRef, useState } from "react";
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+
+// Register the hook to avoid React version discrepancies
+gsap.registerPlugin(useGSAP);
 
 const positions = [
   {
@@ -22,20 +29,140 @@ const positions = [
 ];
 
 const Experience: React.FC = () => {
+  const container = useRef<HTMLDivElement>(null);
+  const headerRef = useRef<HTMLParagraphElement>(null);
+  const hrRef = useRef<HTMLHRElement>(null);
+  const positionRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  // Main GSAP animation sequence
+  useGSAP(() => {
+    if (!hasAnimated) {
+      const tl = gsap.timeline({
+        delay: 0.3,
+        onComplete: () => {
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('experienceAnimated', 'true');
+          }
+          setHasAnimated(true);
+        }
+      });
+
+      // Set initial states for all elements (excluding HR line which has its own animation)
+      const sections = [
+        headerRef.current,
+        ...positionRefs.current.filter(Boolean)
+      ].filter(Boolean);
+
+      gsap.set(sections, {
+        y: 60,
+        opacity: 0,
+        filter: "blur(8px)"
+      });
+
+      // Header animation
+      if (headerRef.current) {
+        tl.to(headerRef.current, {
+          y: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          duration: 0.6,
+          ease: "power3.out"
+        }, 0);
+      }
+
+      // HR line expanding animation
+      if (hrRef.current) {
+        gsap.set(hrRef.current, { scaleX: 0, transformOrigin: "left center" });
+        tl.to(hrRef.current, {
+          scaleX: 1,
+          opacity: 1,
+          duration: 0.8,
+          ease: "power2.out"
+        }, 0.3);
+      }
+
+      // Stagger position sections
+      positionRefs.current.forEach((positionRef, index) => {
+        if (positionRef) {
+          const delay = 0.6 + (index * 0.15);
+
+          tl.to(positionRef, {
+            y: 0,
+            opacity: 1,
+            filter: "blur(0px)",
+            duration: 0.6,
+            ease: "power3.out"
+          }, delay);
+        }
+      });
+
+    } else {
+      // If already animated, show everything immediately
+      const allElements = [
+        headerRef.current,
+        ...positionRefs.current.filter(Boolean)
+      ].filter(Boolean);
+
+      gsap.set(allElements, {
+        opacity: 1,
+        y: 0,
+        filter: "blur(0px)"
+      });
+
+      // Set HR line to full scale with proper opacity
+      if (hrRef.current) {
+        gsap.set(hrRef.current, {
+          scaleX: 1,
+          opacity: 1
+        });
+      }
+    }
+
+  }, { scope: container, dependencies: [hasAnimated] });
+
   return (
-    <div>
+    <div ref={container}>
       <main className="p-8 font-body">
-        <p>Explore my working background!</p>
-        <hr className="my-4 border-t-2 border-body-light-grey" />
+        <p
+          ref={headerRef}
+          style={{
+            opacity: hasAnimated ? 1 : 0,
+            transform: hasAnimated ? 'translateY(0px)' : 'translateY(60px)',
+            filter: hasAnimated ? 'blur(0px)' : 'blur(8px)'
+          }}
+        >
+          Explore my working background!
+        </p>
+
+        <hr
+          ref={hrRef}
+          className="my-4 border-t border-body-light-grey"
+          style={{
+            opacity: hasAnimated ? 1 : 0,
+            transform: hasAnimated ? 'scaleX(1)' : 'scaleX(0)',
+            transformOrigin: 'left center'
+          }}
+        />
+
         {positions.map((position, index) => (
-          <div key={index}>
+          <div
+            key={index}
+            ref={el => { positionRefs.current[index] = el; }}
+            style={{
+              opacity: hasAnimated ? 1 : 0,
+              transform: hasAnimated ? 'translateY(0px)' : 'translateY(60px)',
+              filter: hasAnimated ? 'blur(0px)' : 'blur(8px)'
+            }}
+          >
             <p className="font-bold">{position.title}</p>
             <p className="mb-2">
               <i>{position.company}</i>
             </p>
-            <p className="mb-2">{position.desc}</p>
+            <p className="mb-2 text-neutral-400 text-sm">{position.desc}</p>
             <p>{position.date}</p>
-            <hr className="my-4 border-t-2 border-body-light-grey" />
+            <hr className="my-4 border-t border-body-light-grey" />
           </div>
         ))}
       </main>
