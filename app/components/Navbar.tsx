@@ -30,9 +30,8 @@ const Navbar = () => {
     "Problem Solver",
     "Code Architect",
     "Tech Innovator",
-    "Digital Creator",
     "Web3 Builder",
-    "AI Enthusiast"
+    "AI Enthusiast",
   ];
 
   const buttons = [
@@ -305,15 +304,15 @@ const Navbar = () => {
               ease: "power2.out"
             },
             onComplete: () => {
-              // Start slower scramble effect immediately
+              // Start faster scramble effect immediately
               menuItemsRef.current.forEach((item, index) => {
                 const link = item?.querySelector('a') as HTMLElement;
                 if (link) {
                   // Clear initial text
                   link.textContent = "";
                   setTimeout(() => {
-                    scrambleText(link, buttons[index].name, 0.6, buttons[index].scrambleChars);
-                  }, index * 80);
+                    scrambleText(link, buttons[index].name, 0.3, buttons[index].scrambleChars);
+                  }, index * 60);
                 }
               });
             }
@@ -322,26 +321,9 @@ const Navbar = () => {
 
         // Faster title animation with auto-cycling
         .call(() => {
-          if (titleRef.current) {
-            titleRef.current.textContent = ""; // Start empty
-            gsap.fromTo(titleRef.current,
-              {
-                opacity: 0,
-                scale: 0.9
-              },
-              {
-                opacity: 1,
-                scale: 1,
-                duration: 0.15,
-                ease: "power2.out",
-                onComplete: () => {
-                  setTimeout(() => {
-                    startTitleCycle(); // Start auto-cycling titles
-                  }, 200);
-                }
-              }
-            );
-          }
+          setTimeout(() => {
+            startTitleCycle();
+          }, 200);
         }, [], 0.4);
     }
   }, { dependencies: [isMenuOpen] });
@@ -379,7 +361,7 @@ const Navbar = () => {
     })
       .to(titleRef.current, {
         opacity: 0,
-        scale: 0.9,
+        scale: 1,
         duration: 0.2,
         ease: "power2.in"
       }, 0.05)
@@ -562,6 +544,7 @@ const Navbar = () => {
                 ref={titleRef}
                 className="text-sm text-gray-500 font-mono tracking-wider"
               >
+                Full Stack Engineer
                 {/* Text will be populated by scramble effect */}
               </p>
             </div>
