@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://jaydippatel.dev/",
+    url: "https://jaydip.dev/",
     title: "Jaydip Patel - Full Stack Engineer | Web3 & AI Specialist",
     description:
       "Full Stack Engineer at Coinvise building EarnKit - AI agent monetization platform. Specialized in Web3, blockchain development, and creating innovative DeFi solutions.",
