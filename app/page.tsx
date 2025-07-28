@@ -47,46 +47,8 @@ const Home: React.FC = () => {
     return element.querySelectorAll("span");
   };
 
-  // Magnetic hover effect for links
-  const addMagneticEffect = (element: HTMLElement) => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const rect = element.getBoundingClientRect();
-      const x = e.clientX - rect.left - rect.width / 2;
-      const y = e.clientY - rect.top - rect.height / 2;
-
-      gsap.to(element, {
-        x: x * 0.15,
-        y: y * 0.15,
-        duration: 0.3,
-        ease: "power2.out"
-      });
-    };
-
-    const handleMouseLeave = () => {
-      gsap.to(element, {
-        x: 0,
-        y: 0,
-        duration: 0.5,
-        ease: "elastic.out(1, 0.3)"
-      });
-    };
-
-    element.addEventListener('mousemove', handleMouseMove);
-    element.addEventListener('mouseleave', handleMouseLeave);
-
-    return () => {
-      element.removeEventListener('mousemove', handleMouseMove);
-      element.removeEventListener('mouseleave', handleMouseLeave);
-    };
-  };
-
   // Main GSAP animation sequence - only on first visit
   useGSAP(() => {
-    // Always add magnetic effect regardless of animation state
-    if (linkRef.current) {
-      addMagneticEffect(linkRef.current);
-    }
-
     // Only animate if this is the first visit
 
     const tl = gsap.timeline({
@@ -145,17 +107,6 @@ const Home: React.FC = () => {
         }, delay);
       }
     });
-
-    // Glowing effect animation for link
-    if (linkRef.current) {
-      tl.to(linkRef.current, {
-        boxShadow: "0 0 20px rgba(59, 130, 246, 0.3)",
-        duration: 2,
-        ease: "sine.inOut",
-        repeat: -1,
-        yoyo: true
-      }, 1.2); // Reduced from 2s to start earlier
-    }
 
   }, { scope: container });
 
@@ -246,10 +197,6 @@ const Home: React.FC = () => {
             href="https://earnkit.com"
             target="_blank"
             className="inline-block underline transition-all duration-300 ease-in-out hover:text-nice-blue mx-2 px-2 py-1 rounded-md relative"
-            style={{
-              background: "linear-gradient(45deg, transparent, rgba(59, 130, 246, 0.1))",
-              transform: "translateZ(0)" // Enable hardware acceleration
-            }}
           >
             EarnKit
           </a>

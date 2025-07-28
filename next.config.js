@@ -3,6 +3,7 @@
 const nextConfig = {
   reactStrictMode: true,
   webpack: (config) => {
+    config.cache = false;
     config.resolve.fallback = { fs: false, net: false, tls: false };
     config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
@@ -11,4 +12,4 @@ const nextConfig = {
   output: "standalone",
 };
 
-module.exports = nextConfig;
+export default nextConfig;

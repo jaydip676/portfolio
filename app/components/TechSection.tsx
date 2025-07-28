@@ -69,6 +69,33 @@ const TechSection: React.FC<{ activeSection: string }> = ({
       </svg>, name: "Wagmi"
     },
     {
+      icon: <svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+        width="24px" height="24px" viewBox="0 0 64 64" enableBackground="new 0 0 64 64">
+        <path fill="#ffffff" opacity="1.000000" stroke="none"
+          d="
+   M16.702600,33.822426 
+     C14.726636,26.240801 16.078367,19.844564 21.890856,14.932594 
+     C26.998871,10.615957 32.927422,9.665537 39.185528,12.044909 
+     C46.661514,14.887324 50.690292,21.575796 50.131927,29.769522 
+     C49.644173,36.927120 44.098740,43.333282 37.018051,44.918873 
+     C29.545036,46.592312 22.055643,43.420410 18.156351,36.892582 
+     C17.648251,36.041969 17.304850,35.092976 16.702600,33.822426 
+   z"/>
+        <path fill="#ffffff" opacity="1.000000" stroke="none"
+          d="
+   M35.538509,55.310631 
+     C30.591501,54.999668 26.065481,54.683739 20.583429,54.301075 
+     C25.447105,49.791718 38.172863,49.450886 44.617645,53.799644 
+     C41.731594,54.301647 38.845547,54.803654 35.538509,55.310631 
+   z"/>
+      </svg>, name: "Privy"
+    },
+    {
+      icon: <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" viewBox="0 0 10 31" fill="none" className="nav--logo">
+        <path fillRule="evenodd" clipRule="evenodd" d="M9.7381 8.21527C9.7381 10.2672 8.05309 11.9305 5.97452 11.9305C3.89595 11.9305 2.21094 10.2672 2.21094 8.21527C2.21094 6.16338 3.89595 4.5 5.97452 4.5C8.05309 4.5 9.7381 6.16338 9.7381 8.21527ZM11.9515 25.3055L6.59425 13.7254C6.53986 13.6086 6.45268 13.5097 6.34305 13.4403C6.23342 13.3709 6.10594 13.3341 5.97573 13.3341C5.84552 13.3341 5.71804 13.3709 5.60841 13.4403C5.49878 13.5097 5.41161 13.6086 5.35722 13.7254L0 25.3055H11.9515Z" fill="currentColor"></path>
+      </svg>, name: "TurnKey"
+    },
+    {
       icon: <Image src="/viem.png" alt="Viem" width={24} height={24} />, name: "Viem"
     },
     {
@@ -97,11 +124,10 @@ const TechSection: React.FC<{ activeSection: string }> = ({
 
   const toolsIcons: { icon: React.ReactNode; name: string }[] = [
     { icon: <SiDocker className={iconClass} />, name: "Docker" },
-    { icon: <SiJest className={iconClass} />, name: "Jest" },
     { icon: <SiRailway className={iconClass} />, name: "Railway" },
     { icon: <SiGit className={iconClass} />, name: "Git" },
     { icon: <SiVercel className={iconClass} />, name: "Vercel" },
-    { icon: <SiDocker className={iconClass} />, name: "Docker" },
+    { icon: <SiJest className={iconClass} />, name: "Jest" },
     { icon: <SiGithubactions className={iconClass} />, name: "GitHub Actions" },
   ];
 

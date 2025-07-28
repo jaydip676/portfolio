@@ -19,7 +19,21 @@ const Navbar = () => {
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const titleRef = useRef<HTMLParagraphElement>(null);
   const particlesRef = useRef<HTMLDivElement[]>([]);
+  const desktopMenuRefs = useRef<HTMLSpanElement[]>([]);
+  const rollingTextData = useRef<Array<{ originalSpan: HTMLElement, duplicateSpan: HTMLElement }>>([]);
+  const titleIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
+
+  // Auto-rotating titles for mobile menu
+  const autoTitles = [
+    "Full Stack Engineer",
+    "Problem Solver",
+    "Code Architect",
+    "Tech Innovator",
+    "Digital Creator",
+    "Web3 Builder",
+    "AI Enthusiast"
+  ];
 
   const buttons = [
     { name: "Home", path: "/", scrambleChars: "0&%#$@*&" },
@@ -29,7 +43,7 @@ const Navbar = () => {
   ];
 
   // Enhanced scramble text effect that builds from empty with custom characters
-  const scrambleText = (element: HTMLElement, finalText: string, duration: number = 0.4, customChars?: string) => {
+  const scrambleText = (element: HTMLElement, finalText: string, duration: number = 0.4, customChars?: string, onComplete?: () => void) => {
     const chars = customChars || "!<>-_\\/[]{}—=+*^?#________";
     let frame = 0;
     const totalFrames = duration * 60;
@@ -66,10 +80,151 @@ const Navbar = () => {
         requestAnimationFrame(scramble);
       } else {
         element.textContent = finalText;
+        if (onComplete) onComplete();
       }
     };
 
     scramble();
+  };
+
+  // Auto-cycle titles with direct scramble transition (like ClientWord)
+  const startTitleCycle = () => {
+    let currentIndex = 0;
+
+    const cycleTitle = () => {
+      if (titleRef.current && isMenuOpen) {
+        const nextTitle = autoTitles[currentIndex];
+
+        // Direct transition from current word to new word (like ClientWord)
+        scrambleText(titleRef.current, nextTitle, 0.6, "0&%#$@*&@!&#*", () => {
+          currentIndex = (currentIndex + 1) % autoTitles.length;
+        });
+      }
+    };
+
+    // Start immediately with first title
+    if (titleRef.current && isMenuOpen) {
+      const firstTitle = autoTitles[currentIndex];
+      scrambleText(titleRef.current, firstTitle, 0.6, "0&%#$@*&@!&#*", () => {
+        currentIndex = (currentIndex + 1) % autoTitles.length;
+      });
+    }
+
+    // Set up interval for continuous cycling
+    titleIntervalRef.current = setInterval(cycleTitle, 3000); // Change every 3 seconds
+  };
+
+  // Stop title cycling
+  const stopTitleCycle = () => {
+    if (titleIntervalRef.current) {
+      clearInterval(titleIntervalRef.current);
+      titleIntervalRef.current = null;
+    }
+  };
+
+  // Rolling text animation for desktop menu hover
+  const createRollingText = (element: HTMLElement, text: string) => {
+    const container = document.createElement('div');
+    container.style.position = 'relative';
+    container.style.display = 'inline-flex';
+    container.style.whiteSpace = 'nowrap';
+
+    // Create original and duplicate text
+    const originalSpan = document.createElement('span');
+    const duplicateSpan = document.createElement('span');
+
+    originalSpan.style.display = 'inline-flex';
+    originalSpan.style.whiteSpace = 'nowrap';
+    originalSpan.style.position = 'relative';
+
+    duplicateSpan.style.display = 'inline-flex';
+    duplicateSpan.style.position = 'absolute';
+    duplicateSpan.style.top = '0';
+    duplicateSpan.style.left = '0';
+    duplicateSpan.style.whiteSpace = 'nowrap';
+    duplicateSpan.style.width = '100%';
+
+    // Split text into characters
+    const createCharSpans = (span: HTMLElement, text: string) => {
+      span.innerHTML = '';
+      Array.from(text).forEach((char) => {
+        const charSpan = document.createElement('span');
+        charSpan.textContent = char === ' ' ? '\u00A0' : char;
+        charSpan.style.display = 'inline-block';
+        charSpan.style.whiteSpace = 'nowrap';
+        charSpan.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+
+        // Initially position duplicate chars below and hidden
+        if (span === duplicateSpan) {
+          charSpan.style.transform = 'translateY(45%)';
+          charSpan.style.opacity = '0';
+        } else {
+          charSpan.style.opacity = '1';
+        }
+        span.appendChild(charSpan);
+      });
+    };
+
+    createCharSpans(originalSpan, text);
+    createCharSpans(duplicateSpan, text);
+
+    container.appendChild(originalSpan);
+    container.appendChild(duplicateSpan);
+
+    // Replace element content
+    element.innerHTML = '';
+    element.appendChild(container);
+
+    return { originalSpan, duplicateSpan, container };
+  };
+
+  // Animate rolling text on hover
+  const animateRollingText = (originalSpan: HTMLElement, duplicateSpan: HTMLElement, isHover: boolean) => {
+    const originalChars = originalSpan.querySelectorAll('span');
+    const duplicateChars = duplicateSpan.querySelectorAll('span');
+
+    if (isHover) {
+      // Create timeline for sequential animation
+      const tl = gsap.timeline();
+
+      // First: original letters move out (shorter distance)
+      tl.to(originalChars, {
+        y: '-45%',
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.out",
+        stagger: 0.05
+      })
+        // Then: duplicate letters move in (shorter distance)
+        .to(duplicateChars, {
+          y: '0%',
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+          stagger: 0.05
+        }, 0.1); // Increased delay for smoother transition
+
+    } else {
+      // Create timeline for sequential animation  
+      const tl = gsap.timeline();
+
+      // First: duplicate letters move out (shorter distance)
+      tl.to(duplicateChars, {
+        y: '45%',
+        opacity: 0,
+        duration: 0.3,
+        ease: "power2.out",
+        stagger: 0.05
+      })
+        // Then: original letters move in (shorter distance)
+        .to(originalChars, {
+          y: '0%',
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+          stagger: 0.05
+        }, 0.1); // Increased delay for smoother transition
+    }
   };
 
   // Check if mobile screen
@@ -90,13 +245,22 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Calculate text color based on scroll
-  const getTextColor = () => {
-    const maxScroll = 500;
-    const opacity = Math.min(scrollY / maxScroll, 1);
-    const grayValue = Math.round(64 + (255 - 64) * opacity);
-    return `rgb(${grayValue}, ${grayValue}, ${grayValue})`;
-  };
+  // Initialize rolling text for desktop menu
+  useEffect(() => {
+    // Small delay to ensure refs are ready
+    const timer = setTimeout(() => {
+      if (!isMobile) {
+        desktopMenuRefs.current.forEach((span, index) => {
+          if (span && buttons[index]) {
+            const { originalSpan, duplicateSpan } = createRollingText(span, buttons[index].name);
+            rollingTextData.current[index] = { originalSpan, duplicateSpan };
+          }
+        });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isMobile]);
 
   // Fast and smooth GSAP animations
   useGSAP(() => {
@@ -119,7 +283,7 @@ const Navbar = () => {
         }
       )
 
-        // Faster menu items animation
+        // Much faster menu items animation
         .fromTo(menuItemsRef.current,
           {
             opacity: 0,
@@ -133,30 +297,30 @@ const Navbar = () => {
             rotationX: 0,
             filter: "blur(0px)",
             scale: 1,
-            duration: 0.4,
+            duration: 0.2,
             ease: "back.out(1.2)",
             stagger: {
-              amount: 0.15,
+              amount: 0.08,
               from: "start",
               ease: "power2.out"
             },
             onComplete: () => {
-              // Start scramble effect immediately
+              // Start slower scramble effect immediately
               menuItemsRef.current.forEach((item, index) => {
                 const link = item?.querySelector('a') as HTMLElement;
                 if (link) {
                   // Clear initial text
                   link.textContent = "";
                   setTimeout(() => {
-                    scrambleText(link, buttons[index].name, 0.3, buttons[index].scrambleChars);
-                  }, index * 60);
+                    scrambleText(link, buttons[index].name, 0.6, buttons[index].scrambleChars);
+                  }, index * 80);
                 }
               });
             }
-          }, 0.1
+          }, 0.05
         )
 
-        // Faster title animation
+        // Faster title animation with auto-cycling
         .call(() => {
           if (titleRef.current) {
             titleRef.current.textContent = ""; // Start empty
@@ -168,17 +332,17 @@ const Navbar = () => {
               {
                 opacity: 1,
                 scale: 1,
-                duration: 0.2,
+                duration: 0.15,
                 ease: "power2.out",
                 onComplete: () => {
                   setTimeout(() => {
-                    scrambleText(titleRef.current as HTMLElement, "Full Stack Engineer", 0.3, "/*+-=<>[]{}");
-                  }, 80);
+                    startTitleCycle(); // Start auto-cycling titles
+                  }, 200);
                 }
               }
             );
           }
-        }, [], 0.8);
+        }, [], 0.4);
     }
   }, { dependencies: [isMenuOpen] });
 
@@ -187,6 +351,9 @@ const Navbar = () => {
   };
 
   const closeMenu = () => {
+    // Stop title cycling
+    stopTitleCycle();
+
     const tl = gsap.timeline();
 
     // Kill all particle animations
@@ -239,10 +406,12 @@ const Navbar = () => {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
+      stopTitleCycle(); // Ensure title cycling stops when menu closes
     }
 
     return () => {
       document.body.style.overflow = "unset";
+      stopTitleCycle(); // Cleanup on unmount
     };
   }, [isMenuOpen]);
 
@@ -254,33 +423,38 @@ const Navbar = () => {
           <Link
             key={index}
             href={button.path}
-            className={`group relative rounded-md px-4 py-2 transition-all duration-300 hover:scale-105 ${pathname === button.path ? "font-semibold" : ""
+            className={`group relative rounded-md px-4 py-2 transition-all duration-300 ${pathname === button.path ? "font-semibold" : ""
               }`}
             style={{
-              color: pathname === button.path ? "#ffffff" : getTextColor()
+              color: pathname === button.path ? "#ffffff" : "text-neutral-700"
             }}
-            onMouseEnter={(e) => {
-              if (pathname !== button.path) {
-                gsap.to(e.currentTarget, {
-                  scale: 1.05,
-                  duration: 0.3,
-                  ease: "power2.out"
-                });
+            onMouseEnter={() => {
+              if (rollingTextData.current[index]) {
+                const { originalSpan, duplicateSpan } = rollingTextData.current[index];
+                animateRollingText(originalSpan, duplicateSpan, true);
               }
             }}
-            onMouseLeave={(e) => {
-              gsap.to(e.currentTarget, {
-                scale: 1,
-                duration: 0.3,
-                ease: "power2.out"
-              });
+            onMouseLeave={() => {
+              if (rollingTextData.current[index]) {
+                const { originalSpan, duplicateSpan } = rollingTextData.current[index];
+                animateRollingText(originalSpan, duplicateSpan, false);
+              }
             }}
           >
-            <span className="relative z-10">{button.name}</span>
+            <span
+              ref={(el) => {
+                if (el) {
+                  desktopMenuRefs.current[index] = el;
+                }
+              }}
+              className={`relative z-10 ${pathname === button.path ? "text-white" : "text-neutral-700"} hover:text-white`}
+            >
+              {button.name}
+            </span>
             {/* Subtle underline for active state */}
-            {pathname === button.path && (
+            {/* {pathname === button.path && (
               <div className="absolute bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 bg-white" />
-            )}
+            )} */}
           </Link>
         ))}
       </div>
@@ -317,7 +491,7 @@ const Navbar = () => {
               className="group absolute right-6 top-6 z-50 flex h-12 w-12 items-center justify-center rounded-full bg-white/10 backdrop-blur-sm transition-all duration-300 hover:bg-white/20 hover:scale-110"
               aria-label="Close menu"
             >
-              <div className="relative">
+              <div className="relative flex items-center justify-center">
                 <div className="absolute h-0.5 w-6 rotate-45 bg-white transition-all duration-300 group-hover:bg-red-400"></div>
                 <div className="absolute h-0.5 w-6 -rotate-45 bg-white transition-all duration-300 group-hover:bg-red-400"></div>
               </div>

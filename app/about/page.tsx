@@ -320,7 +320,7 @@ const About: React.FC = () => {
         <ClientWord
           initial="Documentation"
           words={titlewords}
-          className="cursor-pointer text-3xl underline transition-all duration-200 ease-in-out hover:text-nice-blue"
+          className="cursor-pointer text-2xl md:text-3xl underline transition-all duration-200 ease-in-out hover:text-nice-blue"
         />
       </div>
 
@@ -375,7 +375,7 @@ const About: React.FC = () => {
         <ClientWord
           initial="Skills"
           words={techwords}
-          className="cursor-pointer text-3xl underline transition-all duration-200 ease-in-out hover:text-nice-blue"
+          className="cursor-pointer text-2xl md:text-3xl underline transition-all duration-200 ease-in-out hover:text-nice-blue"
         />
       </div>
 
@@ -416,7 +416,7 @@ const About: React.FC = () => {
         <ClientWord
           initial="Currently"
           words={title2words}
-          className="cursor-pointer text-3xl underline transition-all duration-200 ease-in-out hover:text-nice-blue"
+          className="cursor-pointer text-2xl md:text-3xl underline transition-all duration-200 ease-in-out hover:text-nice-blue"
         />
       </div>
 
@@ -478,7 +478,7 @@ const About: React.FC = () => {
         }}
       >
         <span className="text-3xl emoji">🎓</span>{" "}
-        <span className="text-3xl">Education</span>
+        <span className="text-2xl md:text-3xl">Education</span>
       </div>
 
       <div
