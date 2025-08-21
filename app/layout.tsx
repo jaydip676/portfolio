@@ -102,7 +102,7 @@ export default function RootLayout({
     <html lang="en" className={`${roboto_mono.variable}`} suppressHydrationWarning>
       <body className="bg-just-black text-white">
 
-        <div className="mx-auto mt-[10vh] max-w-2xl sm:mt-[20vh] sm:flex z-20">
+        <div className="mx-auto mt-[10vh] max-w-2xl sm:mt-[20vh] sm:flex z-20 gap-4">
           <Navbar />
           {children}
           <Analytics />

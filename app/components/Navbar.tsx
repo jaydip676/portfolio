@@ -19,8 +19,6 @@ const Navbar = () => {
   const hamburgerRef = useRef<HTMLButtonElement>(null);
   const titleRef = useRef<HTMLParagraphElement>(null);
   const particlesRef = useRef<HTMLDivElement[]>([]);
-  const desktopMenuRefs = useRef<HTMLSpanElement[]>([]);
-  const rollingTextData = useRef<Array<{ originalSpan: HTMLElement, duplicateSpan: HTMLElement }>>([]);
   const titleIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const pathname = usePathname();
 
@@ -121,111 +119,6 @@ const Navbar = () => {
     }
   };
 
-  // Rolling text animation for desktop menu hover
-  const createRollingText = (element: HTMLElement, text: string) => {
-    const container = document.createElement('div');
-    container.style.position = 'relative';
-    container.style.display = 'inline-flex';
-    container.style.whiteSpace = 'nowrap';
-
-    // Create original and duplicate text
-    const originalSpan = document.createElement('span');
-    const duplicateSpan = document.createElement('span');
-
-    originalSpan.style.display = 'inline-flex';
-    originalSpan.style.whiteSpace = 'nowrap';
-    originalSpan.style.position = 'relative';
-
-    duplicateSpan.style.display = 'inline-flex';
-    duplicateSpan.style.position = 'absolute';
-    duplicateSpan.style.top = '0';
-    duplicateSpan.style.left = '0';
-    duplicateSpan.style.whiteSpace = 'nowrap';
-    duplicateSpan.style.width = '100%';
-
-    // Split text into characters
-    const createCharSpans = (span: HTMLElement, text: string) => {
-      span.innerHTML = '';
-      Array.from(text).forEach((char) => {
-        const charSpan = document.createElement('span');
-        charSpan.textContent = char === ' ' ? '\u00A0' : char;
-        charSpan.style.display = 'inline-block';
-        charSpan.style.whiteSpace = 'nowrap';
-        charSpan.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-
-        // Initially position duplicate chars below and hidden
-        if (span === duplicateSpan) {
-          charSpan.style.transform = 'translateY(45%)';
-          charSpan.style.opacity = '0';
-        } else {
-          charSpan.style.opacity = '1';
-        }
-        span.appendChild(charSpan);
-      });
-    };
-
-    createCharSpans(originalSpan, text);
-    createCharSpans(duplicateSpan, text);
-
-    container.appendChild(originalSpan);
-    container.appendChild(duplicateSpan);
-
-    // Replace element content
-    element.innerHTML = '';
-    element.appendChild(container);
-
-    return { originalSpan, duplicateSpan, container };
-  };
-
-  // Animate rolling text on hover
-  const animateRollingText = (originalSpan: HTMLElement, duplicateSpan: HTMLElement, isHover: boolean) => {
-    const originalChars = originalSpan.querySelectorAll('span');
-    const duplicateChars = duplicateSpan.querySelectorAll('span');
-
-    if (isHover) {
-      // Create timeline for sequential animation
-      const tl = gsap.timeline();
-
-      // First: original letters move out (shorter distance)
-      tl.to(originalChars, {
-        y: '-45%',
-        opacity: 0,
-        duration: 0.3,
-        ease: "power2.out",
-        stagger: 0.05
-      })
-        // Then: duplicate letters move in (shorter distance)
-        .to(duplicateChars, {
-          y: '0%',
-          opacity: 1,
-          duration: 0.3,
-          ease: "power2.out",
-          stagger: 0.05
-        }, 0.1); // Increased delay for smoother transition
-
-    } else {
-      // Create timeline for sequential animation  
-      const tl = gsap.timeline();
-
-      // First: duplicate letters move out (shorter distance)
-      tl.to(duplicateChars, {
-        y: '45%',
-        opacity: 0,
-        duration: 0.3,
-        ease: "power2.out",
-        stagger: 0.05
-      })
-        // Then: original letters move in (shorter distance)
-        .to(originalChars, {
-          y: '0%',
-          opacity: 1,
-          duration: 0.3,
-          ease: "power2.out",
-          stagger: 0.05
-        }, 0.1); // Increased delay for smoother transition
-    }
-  };
-
   // Check if mobile screen
   useEffect(() => {
     const checkScreenSize = () => {
@@ -243,23 +136,6 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  // Initialize rolling text for desktop menu
-  useEffect(() => {
-    // Small delay to ensure refs are ready
-    const timer = setTimeout(() => {
-      if (!isMobile) {
-        desktopMenuRefs.current.forEach((span, index) => {
-          if (span && buttons[index]) {
-            const { originalSpan, duplicateSpan } = createRollingText(span, buttons[index].name);
-            rollingTextData.current[index] = { originalSpan, duplicateSpan };
-          }
-        });
-      }
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [isMobile]);
 
   // Fast and smooth GSAP animations
   useGSAP(() => {
@@ -400,43 +276,24 @@ const Navbar = () => {
   return (
     <div>
       {/* Desktop navigation - hidden on mobile by default */}
-      <div className="hidden md:flex md:flex-col md:justify-center md:space-y-4 md:mt-32">
+      <div className="hidden md:flex md:flex-col md:justify-center md:space-y-4 md:mt-32 gap-4 ">
         {buttons.map((button, index) => (
           <Link
             key={index}
             href={button.path}
-            className={`group relative rounded-md px-4 py-2 transition-all duration-300 ${pathname === button.path ? "font-semibold" : ""
+            className={`group max-w-max relative rounded-md px-0 py-1 transition-all duration-300 ${pathname === button.path ? "font-semibold" : ""
               }`}
             style={{
               color: pathname === button.path ? "#ffffff" : "text-neutral-700"
             }}
-            onMouseEnter={() => {
-              if (rollingTextData.current[index]) {
-                const { originalSpan, duplicateSpan } = rollingTextData.current[index];
-                animateRollingText(originalSpan, duplicateSpan, true);
-              }
-            }}
-            onMouseLeave={() => {
-              if (rollingTextData.current[index]) {
-                const { originalSpan, duplicateSpan } = rollingTextData.current[index];
-                animateRollingText(originalSpan, duplicateSpan, false);
-              }
-            }}
           >
             <span
-              ref={(el) => {
-                if (el) {
-                  desktopMenuRefs.current[index] = el;
-                }
-              }}
-              className={`relative z-10 ${pathname === button.path ? "text-white" : "text-neutral-700"} hover:text-white`}
+              className={`relative z-10 transition-colors duration-300 ${pathname === button.path ? "text-white" : "text-neutral-700"} group-hover:text-white`}
             >
               {button.name}
             </span>
-            {/* Subtle underline for active state */}
-            {/* {pathname === button.path && (
-              <div className="absolute bottom-0 left-1/2 h-0.5 w-6 -translate-x-1/2 bg-white" />
-            )} */}
+            {/* Underline that comes from the left on hover */}
+            <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-white transition-all duration-300 ease-out group-hover:w-full" />
           </Link>
         ))}
       </div>

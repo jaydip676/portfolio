@@ -66,14 +66,6 @@ const projects: Project[] = [
     tech: ["Solidity", "Multi-chain", "DeFi", "React"],
     preview: "/placeholder-project.png"
   },
-  {
-    title: "HandShake Protocol",
-    desc: "Secure token and NFT transfers on BTT Chain with mutual consent mechanism. Features EIP-712 integration, flexible gas payments, and advanced security measures.",
-    link: "https://handshake-mainnet.vercel.app/",
-    status: "Live",
-    tech: ["BTT Chain", "EIP-712", "Smart Contracts", "Security"],
-    preview: "/placeholder-project.png"
-  },
 ];
 
 const Projects: React.FC = () => {
