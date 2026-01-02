@@ -1,0 +1,16 @@
+# Allow all search engines to crawl the entire site
+User-agent: *
+Allow: /
+
+# Disallow crawling of Next.js internal directories
+Disallow: /_next/static/
+Disallow: /_next/image
+
+# Allow crawling of static assets
+Allow: /_next/static/media/
+
+# Sitemap location
+Sitemap: https://jaydip.dev/sitemap.xml
+
+# Crawl-delay (optional, uncomment if needed)
+# Crawl-delay: 1

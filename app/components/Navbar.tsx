@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import { useAnimatedTitle } from "../hooks/useAnimatedTitle";
 
 // Register GSAP plugin
 gsap.registerPlugin(useGSAP);
@@ -273,6 +274,8 @@ const Navbar = () => {
     };
   }, [isMenuOpen]);
 
+
+
   return (
     <div>
       {/* Desktop navigation - hidden on mobile by default */}
@@ -281,19 +284,18 @@ const Navbar = () => {
           <Link
             key={index}
             href={button.path}
-            className={`group max-w-max relative rounded-md px-0 py-1 transition-all duration-300 ${pathname === button.path ? "font-semibold" : ""
-              }`}
+            className="group max-w-max relative rounded-md px-0 py-1 transition-all duration-300"
             style={{
-              color: pathname === button.path ? "#ffffff" : "text-neutral-700"
+              color: pathname === button.path ? "#ffffff" : "text-[#979797]"
             }}
           >
             <span
-              className={`relative z-10 transition-colors duration-300 ${pathname === button.path ? "text-white" : "text-neutral-700"} group-hover:text-white`}
+              className={`relative z-10 transition-colors duration-300 ${pathname === button.path ? "text-white" : "text-[#979797]"} group-hover:text-white`}
             >
               {button.name}
             </span>
             {/* Underline that comes from the left on hover */}
-            <div className="absolute bottom-0 left-0 h-0.5 w-0 bg-white transition-all duration-300 ease-out group-hover:w-full" />
+            <div className={`absolute bottom-0 left-0 h-0.5 w-0 bg-white transition-all duration-300 ease-out group-hover:w-full ${pathname === button.path ? "w-full" : "w-0"}`} />
           </Link>
         ))}
       </div>

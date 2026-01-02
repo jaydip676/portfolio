@@ -4,10 +4,13 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import { Roboto_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import Provider from "./provider";
+
+
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://jaydip.dev/"),
-  title: "Jaydip Patel - Full Stack Engineer | Web3 & AI Specialist",
+  title: "Jaydip Patel — Building fast, scalable products",
   description:
     "Full Stack Engineer at Coinvise building EarnKit - AI agent monetization platform. Specialized in Web3, blockchain development, and creating innovative DeFi solutions with React, Node.js, and Solidity.",
   keywords: [
@@ -101,13 +104,14 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${roboto_mono.variable}`} suppressHydrationWarning>
       <body className="bg-just-black text-white">
-
-        <div className="mx-auto mt-[10vh] max-w-2xl sm:mt-[20vh] sm:flex z-20 gap-4">
-          <Navbar />
-          {children}
-          <Analytics />
-        </div>
-        <Footer />
+        <Provider>
+          <div className="mx-auto mt-[10vh] max-w-2xl sm:mt-[20vh] sm:flex z-20 gap-4">
+            <Navbar />
+            {children}
+            <Analytics />
+          </div>
+          <Footer />
+        </Provider>
       </body>
     </html>
   );
